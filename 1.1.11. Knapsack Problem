@@ -1,0 +1,46 @@
+#include <stdio.h>
+
+int main() {
+    int N, W;
+
+    scanf("%d", &N);
+
+    int value[N], weight[N];
+
+    // Read values
+    for (int i = 0; i < N; i++) {
+        scanf("%d", &value[i]);
+    }
+
+    // Read weights
+    for (int i = 0; i < N; i++) {
+        scanf("%d", &weight[i]);
+    }
+
+    // Read knapsack capacity
+    scanf("%d", &W);
+
+    // dp[w] = maximum value for capacity w
+    int dp[W + 1];
+
+    for (int w = 0; w <= W; w++) {
+        dp[w] = 0;
+    }
+
+    // Process each item
+    for (int i = 0; i < N; i++) {
+        // Traverse backwards so each item is used only once
+        for (int w = W; w >= weight[i]; w--) {
+            int include = dp[w - weight[i]] + value[i];
+
+            if (include > dp[w]) {
+                dp[w] = include;
+            }
+        }
+    }
+
+    printf("%d\n", dp[W]);
+
+    return 0;
+}
+

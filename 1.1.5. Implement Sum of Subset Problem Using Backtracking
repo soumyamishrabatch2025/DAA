@@ -1,0 +1,70 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX_SUBSETS 1024
+#define MAX_N 20
+
+// Global variables to store found subsets
+int *found_subsets[MAX_SUBSETS];
+int subset_sizes[MAX_SUBSETS];
+int subset_count = 0;
+
+void backtrack(int *elements, int n, int target, int index, int current_sum, int *current_subset, int current_size) {
+    // Base Case: Target sum achieved
+    if (current_sum == target) {
+        // Allocate space and store the valid subset
+        found_subsets[subset_count] = (int *)malloc(current_size * sizeof(int));
+        for (int i = 0; i < current_size; i++) {
+            found_subsets[subset_count][i] = current_subset[i];
+        }
+        subset_sizes[subset_count] = current_size;
+        subset_count++;
+        return;
+    }
+
+    // Base Case: Out of bounds or current sum exceeds target
+    if (index >= n || current_sum > target) {
+        return;
+    }
+
+    // Choice 1: Include elements[index]
+    current_subset[current_size] = elements[index];
+    backtrack(elements, n, target, index + 1, current_sum + elements[index], current_subset, current_size + 1);
+
+    // Choice 2: Exclude elements[index]
+    backtrack(elements, n, target, index + 1, current_sum, current_subset, current_size);
+}
+
+int main() {
+    int n;
+    if (scanf("%d", &n) != 1) return 0;
+
+    int elements[MAX_N];
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &elements[i]);
+    }
+
+    int target_sum;
+    scanf("%d", &target_sum);
+
+    int current_subset[MAX_N];
+    
+    // Find all subsets using backtracking
+    backtrack(elements, n, target_sum, 0, 0, current_subset, 0);
+
+    // Output results
+    if (subset_count == 0) {
+        printf("-1\n");
+    } else {
+        // Print in reverse order of discovery
+        for (int i = subset_count - 1; i >= 0; i--) {
+            for (int j = 0; j < subset_sizes[i]; j++) {
+                printf("%d%s" , found_subsets[i][j], (j == subset_sizes[i] - 1) ? "" : " ");
+            }
+            printf(" \n");
+            free(found_subsets[i]); // Free allocated memory
+        }
+    }
+
+    return 0;
+}
